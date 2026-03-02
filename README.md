@@ -7,13 +7,7 @@ Zero dependencies. Stores reminders locally in `~/.remindr/reminders.json`.
 ## Install
 
 ```bash
-npm install -g remindr
-```
-
-Or clone and link:
-
-```bash
-git clone <your-repo-url>
+git clone https://github.com/krishnashahane/remindr.git
 cd remindr
 npm link
 ```
