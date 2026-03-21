@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">remindr</h1>
+  <h1 align="center">🔔 remindr</h1>
   <p align="center">A fast, zero-dependency CLI reminder tool that works everywhere.</p>
 </p>
 
