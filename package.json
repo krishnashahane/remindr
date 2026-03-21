@@ -9,7 +9,7 @@
     "test": "node test.js"
   },
   "keywords": ["cli", "reminder", "todo", "productivity"],
-  "author": "Krishna",
+  "author": "Krishna Shahane",
   "license": "MIT",
   "engines": {
     "node": ">=14"
