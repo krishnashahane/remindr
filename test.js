@@ -32,7 +32,9 @@ function reset() {
 }
 
 process.on('exit', () => {
-  fs.rmSync(tempDir, { recursive: true, force: true });
+  const file = path.join(tempDir, 'reminders.json');
+  if (fs.existsSync(file)) fs.unlinkSync(file);
+  fs.rmdirSync(tempDir);
 });
 
 console.log('Running tests...\n');
