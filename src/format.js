@@ -13,15 +13,16 @@ function formatReminder(r, opts = {}) {
   }
 
   const status = r.completed ? '[x]' : '[ ]';
-  const due = r.due ? ` (due: ${r.due})` : '';
-  const priority = r.priority && r.priority !== 'none' ? ` [${r.priority}]` : '';
-  const list = opts.showList !== false ? ` {${r.list}}` : '';
+  const title = sanitizeField(r.title);
+  const due = r.due ? ` (due: ${sanitizeField(r.due)})` : '';
+  const priority = r.priority && r.priority !== 'none' ? ` [${sanitizeField(r.priority)}]` : '';
+  const list = opts.showList !== false ? ` {${sanitizeField(r.list)}}` : '';
 
-  return `  ${r.id}. ${status} ${r.title}${due}${priority}${list}`;
+  return `  ${r.id}. ${status} ${title}${due}${priority}${list}`;
 }
 
 function sanitizeField(value) {
-  return String(value ?? '').replace(/[\t\r\n]/g, ' ');
+  return String(value ?? '').replace(/[\u0000-\u001F\u007F]/g, ' ');
 }
 
 function formatList(reminders, opts = {}) {
