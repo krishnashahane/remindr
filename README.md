@@ -1,32 +1,16 @@
-<p align="center">
-  <h1 align="center">🔔 remindr</h1>
-  <p align="center">A fast, zero-dependency CLI reminder tool that works everywhere.</p>
-</p>
+# remindr
 
-<p align="center">
-  <a href="#installation">Installation</a> &bull;
-  <a href="#usage">Usage</a> &bull;
-  <a href="#commands">Commands</a> &bull;
-  <a href="#output-formats">Output Formats</a> &bull;
-  <a href="#license">License</a>
-</p>
+A fast, zero-dependency CLI for managing local reminders and tasks.
 
----
+remindr stores reminder data locally in `~/.remindr/reminders.json`. There is no account, server, database, cloud sync, or third-party runtime dependency.
 
-**remindr** is a lightweight command-line reminder and task manager built with Node.js. No databases, no cloud sync, no dependencies — just your reminders stored locally in `~/.remindr/reminders.json`.
+## Requirements
 
-### Why remindr?
-
-- **Zero dependencies** — nothing to install, nothing to break
-- **Cross-platform** — works on macOS, Windows, and Linux
-- **Fast** — no startup overhead, instant results
-- **Organized** — group reminders into custom lists
-- **Flexible output** — human-readable, JSON, or tab-separated for scripting
-- **Portable data** — plain JSON file you can back up, sync, or edit by hand
+- Node.js 14+
 
 ## Installation
 
-### From source
+Clone the repository and link the CLI:
 
 ```bash
 git clone https://github.com/krishnashahane/remindr.git
@@ -34,177 +18,157 @@ cd remindr
 npm link
 ```
 
-### Verify installation
+Verify:
 
 ```bash
 remindr version
+remindr --version
 ```
 
-> Requires Node.js 14 or later.
+Run directly from the repository without installing globally:
+
+```bash
+node bin/remindr.js help
+```
 
 ## Usage
 
 ```bash
-# Show today's reminders (default)
 remindr
-
-# Add a quick reminder
 remindr add "Buy groceries"
-
-# Add with details
-remindr add "Team standup" --list Work --due tomorrow --priority high
-
-# Mark as done
-remindr complete 1
-
-# See what's overdue
+remindr add "Team standup" --list Work --due tomorrow --priority high --notes "Bring the report"
+remindr today
+remindr tomorrow
+remindr week
 remindr overdue
+remindr completed
+remindr all
 ```
 
 ## Commands
 
-### Viewing reminders
+| Command | Purpose |
+| --- | --- |
+| `remindr` / `today` | Show open reminders due today |
+| `tomorrow` | Show open reminders due tomorrow |
+| `week` | Show open reminders due within the next 7 days |
+| `overdue` | Show open reminders whose due date is before today |
+| `completed` | Show completed reminders |
+| `all` | Show all reminders |
+| `add` | Create a reminder |
+| `edit` | Update a reminder |
+| `complete` | Mark reminders complete |
+| `delete` | Delete reminders |
+| `list` | List or manage reminder lists |
+| `help` / `-h` / `--help` | Show help |
+| `version` / `-v` / `--version` | Show the installed version |
 
-| Command              | Description                |
-|----------------------|----------------------------|
-| `remindr`            | Show today's reminders     |
-| `remindr today`      | Show today's reminders     |
-| `remindr tomorrow`   | Show tomorrow's reminders  |
-| `remindr week`       | Show this week's reminders |
-| `remindr overdue`    | Show overdue reminders     |
-| `remindr completed`  | Show completed reminders   |
-| `remindr all`        | Show all reminders         |
+Aliases `upcoming`, `done`, and `rm` remain supported for compatibility.
 
-### Managing reminders
+## Add and edit options
 
-```bash
-# Add a reminder
-remindr add "Title"
-remindr add "Title" --list Work --due 2026-04-01 --priority high --notes "Details here"
-
-# Edit a reminder
-remindr edit <id> --title "Updated title"
-remindr edit <id> --due tomorrow --priority medium
-
-# Complete one or more reminders
-remindr complete <id> [id...]
-
-# Delete a reminder
-remindr delete <id>
+```text
+--title TEXT
+--list NAME
+--due DATE
+--notes TEXT
+--priority low|medium|high|none
 ```
 
-### Managing lists
+Examples:
 
 ```bash
-# Show all lists
+remindr add "Pay electricity bill" --due 2026-12-01 --priority high
+remindr edit 3 --title "Pay electricity bill" --priority high
+remindr edit 3 --due tomorrow
+remindr edit 3 --due ""
+remindr edit 3 --notes ""
+```
+
+An empty `--due` or `--notes` value clears that field.
+
+## Date formats
+
+Supported forms:
+
+| Format | Example |
+| --- | --- |
+| Relative | `today`, `tomorrow`, `yesterday` |
+| Date | `2026-04-15` |
+| Local date/time | `2026-04-15 14:30` |
+| ISO 8601 | `2026-04-15T14:30:00.000Z` |
+
+Invalid calendar dates and invalid local times are rejected.
+
+## Lists
+
+```bash
 remindr list
-
-# Show reminders in a specific list
 remindr list Work
-
-# Create a new list
 remindr list --create Projects
-
-# Rename a list
 remindr list Work --rename Office
-
-# Delete a list (removes all reminders in it)
 remindr list Work --delete
 ```
 
-### Options for `add` and `edit`
+List matching and duplicate prevention are case-insensitive.
 
-| Flag                  | Description                              |
-|-----------------------|------------------------------------------|
-| `--title "text"`      | Reminder title                           |
-| `--list Name`         | Assign to a list (created automatically) |
-| `--due DATE`          | Set a due date                           |
-| `--notes "text"`      | Add notes                                |
-| `--priority low\|medium\|high` | Set priority level              |
+The `Default` list is always preserved and cannot be deleted or renamed. Deleting a custom list also deletes the reminders assigned to it.
 
-## Date Formats
-
-The `--due` flag and date filters accept:
-
-| Format             | Example                    |
-|--------------------|----------------------------|
-| Relative           | `today`, `tomorrow`, `yesterday` |
-| Date               | `2026-04-15`               |
-| Date and time      | `2026-04-15 14:30`         |
-| ISO 8601           | `2026-04-15T14:30:00.000Z` |
-
-## Output Formats
-
-Control how remindr displays results:
+## Output formats
 
 ```bash
-# Default: human-readable
-remindr today
-
-# JSON (great for piping to jq)
 remindr today --json
-
-# Tab-separated (great for awk, cut, spreadsheets)
 remindr today --plain
-
-# Count only
 remindr today --quiet
 ```
 
-### Examples
+- `--json` prints reminder objects as JSON.
+- `--plain` prints tab-separated records suitable for shell pipelines.
+- `--quiet` prints only the number of matching reminders.
 
-**Default output:**
-```
-  1. [ ] Buy groceries (due: 2026-03-21) {Personal}
-  2. [ ] Team standup (due: 2026-03-21) [high] {Work}
-```
+Plain output sanitizes tabs and line breaks inside titles/list names so one reminder remains one record.
 
-**JSON output:**
-```json
-[
-  {
-    "id": 1,
-    "title": "Buy groceries",
-    "list": "Personal",
-    "due": "2026-03-21",
-    "priority": "none",
-    "completed": false
-  }
-]
-```
+## Data and safety
 
-## Data Storage
+Data is stored at:
 
-All data is stored in a single JSON file at:
-
-```
+```text
 ~/.remindr/reminders.json
 ```
 
-To back up your reminders, simply copy this file. To reset, delete it — remindr will create a fresh one on next use.
+The data directory is created with restrictive permissions where supported, and the reminder file is written with owner-only permissions where supported.
 
-## Running Tests
+Writes are performed through a temporary file. On platforms where an atomic rename can replace the existing file, remindr uses that path; on Windows it falls back to copying the fully written file before removing the temporary file.
+
+The application does not make network requests or transmit reminder data.
+
+To back up reminders, copy the JSON file. Deleting the file resets remindr to an empty store.
+
+## Tests
 
 ```bash
 npm test
 ```
 
-## Project Structure
+The test suite:
 
-```
+- Uses only Node.js built-ins.
+- Runs against a temporary data directory.
+- Never modifies the user's real `~/.remindr` data.
+- Covers date validation, persistence, IDs, lists, formatting, and CLI argument parsing.
+
+## Project structure
+
+```text
 remindr/
-  bin/remindr.js     Entry point
-  src/cli.js         Command parsing and execution
-  src/store.js       Data persistence (JSON file)
-  src/format.js      Output formatting
-  src/date.js        Date parsing utilities
+  bin/remindr.js     CLI entry point
+  src/cli.js         Argument parsing and command dispatch
+  src/store.js       Local JSON persistence and reminder operations
+  src/date.js        Date parsing and validation
+  src/format.js      Human-readable, JSON, and plain output
   test.js            Test suite
 ```
 
-## Author
-
-**Krishna Shahane** — [github.com/krishnashahane](https://github.com/krishnashahane)
-
 ## License
 
-[MIT](LICENSE)
+MIT — see [LICENSE](LICENSE).
