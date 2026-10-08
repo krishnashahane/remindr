@@ -167,13 +167,13 @@ test('format: output sanitizes control characters', () => {
 
   const human = formatList([{
     id: 1,
-    title: 'hello\\u001b[31mworld',
+    title: 'hello\u001b[31mworld',
     list: 'Work',
     due: null,
     priority: 'none',
     completed: false
   }]);
-  assert.strictEqual(human.includes('\\u001b'), false);
+  assert.strictEqual(human.includes('\u001b'), false);
 });
 
 test('parseArgs: short help/version aliases work', () => {
