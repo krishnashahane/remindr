@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const DATA_DIR = path.join(os.homedir(), '.remindr');
+const DATA_DIR = process.env.REMINDR_DATA_DIR ? path.resolve(process.env.REMINDR_DATA_DIR) : path.join(os.homedir(), '.remindr');
 const DATA_FILE = path.join(DATA_DIR, 'reminders.json');
 const VALID_PRIORITIES = new Set(['none', 'low', 'medium', 'high']);
 
@@ -23,8 +23,13 @@ function normalizeData(data) {
     ? data.lists.filter(v => typeof v === 'string' && v.trim())
     : [];
 
-  const nextId = Number.isSafeInteger(data.nextId) && data.nextId > 0 ? data.nextId : 1;
-  if (!lists.includes('Default')) lists.unshift('Default');
+  const maxId = reminders.reduce((max, reminder) => {
+    return Number.isSafeInteger(reminder && reminder.id) && reminder.id > max ? reminder.id : max;
+  }, 0);
+  let nextId = Number.isSafeInteger(data.nextId) && data.nextId > 0 ? data.nextId : 1;
+  if (nextId <= maxId) nextId = maxId + 1;
+  if (!Number.isSafeInteger(nextId)) throw new Error('Reminder id limit reached.');
+  if (!lists.some(name => name.toLowerCase() === 'default')) lists.unshift('Default');
 
   return { reminders, lists, nextId };
 }
@@ -54,7 +59,15 @@ function save(data) {
     } finally {
       fs.closeSync(fd);
     }
-    fs.renameSync(temp, DATA_FILE);
+    try {
+      fs.renameSync(temp, DATA_FILE);
+    } catch (err) {
+      // Windows cannot replace an existing file with rename(). Fall back to a complete copy.
+      if (err.code !== 'EEXIST' && err.code !== 'EPERM' && err.code !== 'ENOTEMPTY') throw err;
+      fs.copyFileSync(temp, DATA_FILE);
+      fs.unlinkSync(temp);
+    }
+    try { fs.chmodSync(DATA_FILE, 0o600); } catch (_) {}
   } catch (err) {
     try { fs.unlinkSync(temp); } catch (_) {}
     throw new Error(`Cannot save reminders: ${err.message}`);
