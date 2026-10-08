@@ -129,9 +129,10 @@ test('createList: duplicate names are rejected case-insensitively', () => {
 
 test('renameList: updates reminders and prevents collisions', () => {
   const r = store.addReminder('Project task', { list: 'Projects' });
-  assert.strictEqual(store.renameList('projects', 'Work'), true);
-  assert.strictEqual(store.getReminders({ list: 'work' })[0].id, r.id);
-  assert.strictEqual(store.renameList('Work', 'Default'), false);
+  assert.strictEqual(store.renameList('projects', 'Office'), true);
+  assert.strictEqual(store.getReminders({ list: 'office' })[0].id, r.id);
+  assert.strictEqual(store.renameList('Office', 'Work'), false);
+  assert.throws(() => store.renameList('Default', 'Primary'), /cannot be renamed/i);
 });
 
 test('deleteList: Default cannot be deleted', () => {
