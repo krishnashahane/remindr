@@ -223,7 +223,10 @@ function parseArgs(args) {
   const positional = [];
   let command = null;
 
-  if (args.length && !args[0].startsWith('-')) {
+  if (args.length && ['--help', '-h', '--version', '-v'].includes(args[0])) {
+    command = args[0];
+    args = args.slice(1);
+  } else if (args.length && !args[0].startsWith('-')) {
     command = args[0];
     args = args.slice(1);
   }
