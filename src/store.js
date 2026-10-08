@@ -94,8 +94,8 @@ function validatePriority(priority) {
 function addReminder(title, opts = {}) {
   const data = load();
   const clean = cleanTitle(title);
-  const list = opts.list ? cleanName(opts.list) : 'Default';
-  const priority = validatePriority(opts.priority || 'none');
+  const list = opts.list !== undefined ? cleanName(opts.list) : 'Default';
+  const priority = validatePriority(opts.priority ?? 'none');
 
   if (!data.lists.some(name => name.toLowerCase() === list.toLowerCase())) data.lists.push(list);
 
@@ -210,6 +210,8 @@ function renameList(oldName, newName) {
   const data = load();
   const oldClean = cleanName(oldName);
   const newClean = cleanName(newName);
+
+  if (oldClean.toLowerCase() === 'default') throw new Error('The Default list cannot be renamed.');
 
   const idx = data.lists.findIndex(name => name.toLowerCase() === oldClean.toLowerCase());
   if (idx === -1) return false;
