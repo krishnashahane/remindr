@@ -164,6 +164,13 @@ test('format: plain output sanitizes line breaks and tabs', () => {
   assert.strictEqual(output.includes('\tvalue'), false);
 });
 
+test('parseArgs: short help/version aliases work', () => {
+  assert.strictEqual(parseArgs(['-h']).command, '-h');
+  assert.strictEqual(parseArgs(['--help']).command, '--help');
+  assert.strictEqual(parseArgs(['-v']).command, '-v');
+  assert.strictEqual(parseArgs(['--version']).command, '--version');
+});
+
 test('parseArgs: unknown options are rejected', () => {
   assert.throws(() => parseArgs(['add', 'Task', '--wat']), /Unknown option/);
 });
