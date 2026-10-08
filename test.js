@@ -153,7 +153,7 @@ test('storage: next id remains unique after deleted highest id', () => {
   assert.strictEqual(c.id > a.id, true);
 });
 
-test('format: plain output sanitizes line breaks and tabs', () => {
+test('format: output sanitizes control characters', () => {
   const output = formatList([{
     id: 1,
     title: 'hello\nworld\tvalue',
@@ -164,6 +164,16 @@ test('format: plain output sanitizes line breaks and tabs', () => {
   }], { plain: true });
   assert.strictEqual(output.includes('\nworld'), false);
   assert.strictEqual(output.includes('\tvalue'), false);
+
+  const human = formatList([{
+    id: 1,
+    title: 'hello\\u001b[31mworld',
+    list: 'Work',
+    due: null,
+    priority: 'none',
+    completed: false
+  }]);
+  assert.strictEqual(human.includes('\\u001b'), false);
 });
 
 test('parseArgs: short help/version aliases work', () => {
