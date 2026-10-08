@@ -1,14 +1,19 @@
 {
   "name": "remindr",
-  "version": "1.0.0",
-  "description": "Cross-platform CLI reminder tool",
+  "version": "1.1.0",
+  "description": "Zero-dependency local CLI reminder manager",
   "bin": {
     "remindr": "./bin/remindr.js"
   },
   "scripts": {
     "test": "node test.js"
   },
-  "keywords": ["cli", "reminder", "todo", "productivity"],
+  "keywords": [
+    "cli",
+    "reminder",
+    "todo",
+    "productivity"
+  ],
   "author": "Krishna Shahane",
   "license": "MIT",
   "engines": {
